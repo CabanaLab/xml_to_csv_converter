@@ -6,6 +6,7 @@ from xml.etree import ElementTree
 import zipfile
 import numpy as np, matplotlib.pyplot as plt
 import os, sys
+sys.setrecursionlimit(50000)
 import types
 
 # Parent Classes
@@ -84,8 +85,9 @@ class ICDDXmlFile(_ReferenceFile):
                 intensity_list[:] = [x for x in intensity_list if x != '\n']
                 intensity_list[:] = [x.rstrip('m') for x in intensity_list]
                 intensity_list[:] = [x.lstrip('<') for x in intensity_list]
-                intensity_list[:] = [x or 1 for x in intensity_list]
-                intensity_list[:] = [100*int(x)/int(max(intensity_list)) for x in intensity_list]
+                intensity_list[:] = [int(x) or 1 for x in intensity_list]
+                if max(intensity_list) >= 999:
+                        intensity_list[:] = [int(x)/10 for x in intensity_list]
                 intensity_list[:] = [x if x > 1 else 0 for x in intensity_list]
                 
                 return theta_list, intensity_list, hkl_list, h_list, k_list, l_list, d_list
